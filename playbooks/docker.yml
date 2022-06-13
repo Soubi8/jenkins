@@ -32,7 +32,3 @@
           - docker-compose-plugin
         state: latest
         update_cache: true
-    
-    - name: Other
-      shell:
-        - mkdir ~/jenkins_compose

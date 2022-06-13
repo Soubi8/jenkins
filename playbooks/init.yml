@@ -1,0 +1,138 @@
+- hosts: "*"
+  
+  vars_prompt:
+    
+    - name: username
+      prompt: Please enter the username
+      private: no
+    
+    - name: password
+      prompt: Please enter the password
+      private: yes
+      encrypt: sha512_crypt
+      confirm: yes
+      salt_size: 7
+  
+  vars:
+    
+    workdir: ~/jenkins_compose
+    ssh_key_filename: jenkins_agent
+  
+  tasks:
+    
+    - name: Creating the {{username}} user
+      ansible.builtin.user:
+        name: "{{username}}"
+        password: "{{password}}"
+        shell: /bin/bash
+        comment: User to maintain the machine
+    
+    - name: Copying the pubkey to remote temp
+      become: yes
+      become_user: "{{username}}"
+      copy:
+        src: "~/.ssh/id_rsa.pub"
+        dest: "/tmp/remote-id_rsa.pub"
+    
+    - name: Adding pubkey to authorized_keys
+      become: yes
+      become_user: "{{username}}"
+      shell: |
+        mkdir ~/.ssh/
+        cat /tmp/remote-id_rsa.pub >> ~/.ssh/authorized_keys
+        rm /tmp/remote-id_rsa.pub
+    
+    - name: Installing dependencies
+      become: yes
+      apt:
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - python3-pip
+          - python3-setuptools
+        state: latest
+        update_cache: true
+        
+    - name: Adding Docker GPG apt Key
+      become: yes
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Adding Docker repository
+      become: yes
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: Installing Docker & its components
+      become: yes
+      apt:
+        pkg: 
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-compose-plugin
+        state: latest
+        update_cache: true
+
+    - name: Checking if workdir exists
+      become: yes
+      become_user: "{{username}}"
+      stat: path={{workdir}}
+      register: status
+
+    - name: Creating workdir
+      become: yes
+      become_user: "{{username}}"
+      shell: mkdir {{workdir}}
+      when: not status.stat.exists
+
+    - name: Copying docker_compose.yml
+      become: yes
+      become_user: "{{username}}"
+      copy:
+        src: ./files/docker-compose.yml
+        dest: "{{workdir}}/docker-compose.yml"
+        owner: "{{username}}"
+        group: "{{username}}"
+        mode: 0644
+
+    - name: Generating SSH key "{{ssh_key_filename}}"
+      become: yes
+      become_user: "{{username}}"
+      openssh_keypair:
+        path: "{{workdir}}/{{ssh_key_filename}}"
+        type: rsa
+        size: 4096
+        state: present
+        force: no
+
+    - name: Passing key to docker_compose.yml
+      become: yes
+      become_user: "{{username}}"
+      shell: echo "JENKINS_AGENT_SSH_PUBKEY=$(cat {{workdir}}/jenkins_agent.pub)" > {{workdir}}/.env
+
+    - name: Adding {{username}} to Docker group
+      become: yes
+      shell: usermod -aG docker {{username}}
+
+    - name: Starting Docker Compose
+      become: yes
+      become_user: "{{username}}"
+      shell: docker compose -f {{workdir}}/docker-compose.yml up -d
+      
+    - name: Waiting for Jenkins to start
+      become: yes
+      wait_for:
+        path: /home/{{username}}/jenkins_compose/jenkins_configuration/secrets/initialAdminPassword
+        state: present
+        
+    - name: Showing the initial pw for Jenkins
+      become: yes
+      shell: cat /home/{{username}}/jenkins_compose/jenkins_configuration/secrets/initialAdminPassword
+      register: result
+    - debug:
+        var: result.stdout

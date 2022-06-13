@@ -1,0 +1,12 @@
+- hosts: all
+  become: true
+  become_user: "jenkins"
+  tasks:
+  - name: Creating ssh folder and authorized_keys file
+    shell: |
+      mkdir /home/jenkins/.ssh
+      touch /home/jenkins/.ssh/authorized_keys
+  - name: Adding public ssh key
+    lineinfile:
+      path: "/home/jenkins/.ssh/authorized_keys"
+      line: "{{pubkey}}"
