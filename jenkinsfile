@@ -1,0 +1,54 @@
+pipeline {
+    agent {
+        label 'agent1'
+    }
+    environment {
+        REGISTRY_NAME = 'soubi8/fp'
+        DOCKER_PWD = credentials('docker-pwd')
+    }
+    stages {
+        stage('SCM Checkout') {
+            steps {
+                git credentialsId: 'jenkins_key', url: 'git@github.com:Soubi8/realworld-springboot-java.git'
+                script {
+                    TAG = sh(returnStdout: true, script: 'git rev-parse --abbrev-ref HEAD').trim()
+                }
+            }
+        }
+        stage('Build App to Docker Image') {
+            steps {
+                sh '''
+                    sudo usermod -aG docker $USER
+                    sudo chown $USER /var/run/docker.sock
+                '''
+                sh "docker build --pull -t ${REGISTRY_NAME}:${TAG} ."
+            }
+        }
+        stage('Push Docker Image') {
+            steps {  // Add credential helper for future
+                sh 'echo "$DOCKER_PWD" | docker login -u soubi8 --password-stdin'
+                sh "docker push ${REGISTRY_NAME}:${TAG}"
+                sh 'docker logout' 
+            }
+        }
+        stage('Deploy to Dev Server') {
+            steps {
+                script {
+                    def dockerRun = "docker run --rm -d -p 8080:8080 ${REGISTRY_NAME}:${TAG}"
+                    sshagent(['aws_fp_api']) {
+                        sh "ssh -o StrictHostKeyChecking=no ubuntu@3.72.251.197 ${dockerRun}"
+                    }
+                }
+            }
+        }
+        stage('Test the API on Dev Server') {
+            steps {
+                sh '''
+                    chmod +x /home/jenkins/agent/workspace/docker-app/200.sh
+                    /home/jenkins/agent/workspace/docker-app/200.sh
+                    APIURL=http://3.72.251.197 ~/agent/workspace/docker-app/doc/run-api-tests.sh
+                '''
+            }
+        }
+    }
+}

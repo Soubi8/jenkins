@@ -1,2 +1,2 @@
 [jenkins]
-127.0.0.1 ansible_port=5679 ansible_ssh_private_key_file=~/.ssh/id_rsa
+207.180.229.152 ansible_port=22 ansible_ssh_private_key_file=~/.ssh/id_rsa

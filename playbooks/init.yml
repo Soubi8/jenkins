@@ -129,10 +129,15 @@
       wait_for:
         path: /home/{{username}}/jenkins_compose/jenkins_configuration/secrets/initialAdminPassword
         state: present
-        
+
     - name: Showing the initial pw for Jenkins
       become: yes
       shell: cat /home/{{username}}/jenkins_compose/jenkins_configuration/secrets/initialAdminPassword
       register: result
     - debug:
         var: result.stdout
+
+# Add:
+# chmod 400 jenkins_agent private key
+# Generate key for jenkins (for Github)
+# chmod 400 jenkins private key

@@ -1,0 +1,7 @@
+# Terraform temp files #
+########################
+terraform/.terraform
+terraform/.terraform.lock.hcl
+terraform/terraform.exe
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
