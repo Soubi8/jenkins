@@ -44,9 +44,8 @@ pipeline {
         stage('Test the API on Dev Server') {
             steps {
                 sh '''
-                    chmod +x /home/jenkins/agent/workspace/docker-app/200.sh
-                    /home/jenkins/agent/workspace/docker-app/200.sh
-                    APIURL=http://3.72.251.197 ~/agent/workspace/docker-app/doc/run-api-tests.sh
+                    bash ~/agent/workspace/docker-app/200.sh
+                    export APIURL=http://3.72.251.197 && bash ~/agent/workspace/docker-app/doc/run-api-tests.sh
                 '''
             }
         }
