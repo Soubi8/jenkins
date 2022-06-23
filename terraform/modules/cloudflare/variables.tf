@@ -9,3 +9,10 @@ variable "cf_api_key" {
     type = string
     sensitive = true
 }
+
+
+variable "cf_zone_id" {
+    description = "Cloudflare's Zone ID"
+    type = string
+    sensitive = true
+}

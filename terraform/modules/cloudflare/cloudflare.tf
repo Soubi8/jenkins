@@ -4,6 +4,9 @@ provider "cloudflare" {
   zone_id = var.cf_zone_id
 }
 
+variable "cf_auth" {
+}
+
 variable "name" {
 }
 
