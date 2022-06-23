@@ -1,7 +1,7 @@
 provider "cloudflare" {
-  email = var.cf_email
-  api_key = var.cf_api_key
-  zone_id = var.cf_zone_id
+  email = var.cf_auth.email
+  api_key = var.cf_auth.api_key
+  zone_id = var.cf_auth.zone_id
 }
 
 variable "cf_auth" {

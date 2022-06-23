@@ -66,9 +66,9 @@ resource "aws_security_group" "web_sg" {
 
 locals {
   cf_auth = {
-    cf_email : "${var.cf_email}"
-    cf_api_key : "${var.cf_api_key}"
-    cf_zone_id : "${var.cf_zone_id}"
+    email : "${var.cloudflare_email}"
+    api_key : "${var.cloudflare_api_key}"
+    zone_id : "${var.cloudflare_zone_id}"
   }
 }
 

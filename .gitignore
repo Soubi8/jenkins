@@ -8,3 +8,4 @@ terraform/terraform.tfstate.backup
 terraform/modules/cloudflare/secret.tfvars
 terraform/secret.tfvars
 terraform/secret.tfautovars
+*.tfvars
