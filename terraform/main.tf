@@ -64,7 +64,14 @@ resource "aws_security_group" "web_sg" {
   }
 }
 
+#module "dev_cloudflare" {
+  #source = "./modules/cloudflare"
+  #name = "dev"
+  #ip_dev = aws_instance.web.0.public_ip
+#}
+
 module "cloudflare" {
   source = "./modules/cloudflare"
-  aws_instance = var.aws_instance
+  name = "prod"
+  ip_prod = aws_instance.web.1.public_ip
 }
