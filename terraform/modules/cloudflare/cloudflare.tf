@@ -1,6 +1,7 @@
 provider "cloudflare" {
   email = var.cf_email
   api_key = var.cf_api_key
+  zone_id = var.cf_zone_id
 }
 
 variable "name" {
@@ -10,9 +11,8 @@ variable "ip"{
 }
 
 resource "cloudflare_record" "app" {
-  domain = "epam.pp.ua"
   name = var.name
-  value = var.ip_prod
+  value = var.ip
   type = "A"
   proxied = true
 }

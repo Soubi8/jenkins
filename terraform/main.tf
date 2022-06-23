@@ -64,14 +64,24 @@ resource "aws_security_group" "web_sg" {
   }
 }
 
+locals {
+  cf_auth = {
+    cf_email : "${var.cf_email}"
+    cf_api_key : "${var.cf_api_key}"
+    cf_zone_id : "${var.cf_zone_id}"
+  }
+}
+
 module "dev_cloudflare" {
   source = "./modules/cloudflare"
   name = "dev"
   ip = aws_instance.web.0.public_ip
+  cf_auth = local.cf_auth
 }
 
 module "cloudflare" {
   source = "./modules/cloudflare"
   name = "prod"
   ip = aws_instance.web.1.public_ip
+  cf_auth = local.cf_auth
 }
