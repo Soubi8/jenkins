@@ -16,7 +16,7 @@ resource "aws_instance" "web" {
     Project = var.tag_project_name
   }
 
-#provisioner "local-exec" {
+  #provisioner "local-exec" {
   #command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ubuntu -i '${self.public_ip},' --private-key ~/.ssh/fp_key.pem ./playbook_aws/nginx.yml"
   #interpreter = ["bash", "-c"]
   #}
@@ -48,7 +48,7 @@ resource "aws_security_group" "web_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
     description = "Allow default SSH port"
-  } 
+  }
 
   egress {
     from_port   = 0
@@ -73,15 +73,15 @@ locals {
 }
 
 module "dev_cloudflare" {
-  source = "./modules/cloudflare"
-  name = "dev"
-  ip = aws_instance.web.0.public_ip
+  source  = "./modules/cloudflare"
+  name    = "dev"
+  ip      = aws_instance.web.0.public_ip
   cf_auth = local.cf_auth
 }
 
 module "cloudflare" {
-  source = "./modules/cloudflare"
-  name = "prod"
-  ip = aws_instance.web.1.public_ip
+  source  = "./modules/cloudflare"
+  name    = "prod"
+  ip      = aws_instance.web.1.public_ip
   cf_auth = local.cf_auth
 }
