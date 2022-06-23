@@ -3,24 +3,16 @@ provider "cloudflare" {
   api_key = var.cf_api_key
 }
 
-variable "ip_dev" {
+variable "name" {
 }
 
-variable "ip_prod"{
+variable "ip"{
 }
 
-resource "cloudflare_record" "www" {
+resource "cloudflare_record" "app" {
   domain = "epam.pp.ua"
-  name = "www"
-  value = var.aws_instance.web.1.public_ip
-  type = "A"
-  proxied = true
-}
-
-resource "cloudflare_record" "dev" {
-  domain = "epam.pp.ua"
-  name = "dev"
-  value = var.aws_instance.web.0.public_ip
+  name = var.name
+  value = var.ip_prod
   type = "A"
   proxied = true
 }
