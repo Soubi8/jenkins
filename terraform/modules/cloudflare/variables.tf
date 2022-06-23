@@ -1,18 +1,15 @@
-variable "cloudflare_email" {
-    description = "Email address associated with Cloudflare"
-    type = string
-    sensitive = true
+variable "cf_auth" {
+    type = object({
+        email : string,
+        api_key : string,
+        zone_id : string
+    })
 }
 
-variable "cloudflare_api_key" {
-    description = "Cloudflare's API key"
+variable "name" {
     type = string
-    sensitive = true
 }
 
-
-variable "cloudflare_zone_id" {
-    description = "Cloudflare's Zone ID"
+variable "ip"{
     type = string
-    sensitive = true
 }

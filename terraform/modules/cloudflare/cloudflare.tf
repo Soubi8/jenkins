@@ -4,15 +4,6 @@ provider "cloudflare" {
   zone_id = var.cf_auth.zone_id
 }
 
-variable "cf_auth" {
-}
-
-variable "name" {
-}
-
-variable "ip"{
-}
-
 resource "cloudflare_record" "app" {
   name = var.name
   value = var.ip
