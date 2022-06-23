@@ -16,10 +16,10 @@ resource "aws_instance" "web" {
     Project = var.tag_project_name
   }
 
-provisioner "local-exec" {
-  command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ubuntu -i '${self.public_ip},' --private-key ~/.ssh/fp_key.pem ./playbook_aws/nginx.yml"
-  interpreter = ["bash", "-c"]
-  }
+#provisioner "local-exec" {
+  #command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ubuntu -i '${self.public_ip},' --private-key ~/.ssh/fp_key.pem ./playbook_aws/nginx.yml"
+  #interpreter = ["bash", "-c"]
+  #}
 
 }
 
@@ -62,4 +62,9 @@ resource "aws_security_group" "web_sg" {
     Name        = "web_sg"
     Description = "HTTP/SSH-ALL"
   }
+}
+
+module "cloudflare" {
+  source = "./modules/cloudflare"
+  aws_instance = var.aws_instance
 }
