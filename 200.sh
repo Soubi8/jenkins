@@ -1,7 +1,7 @@
 #!/bin/bash
 
 command () {
-    response=$(curl --write-out %{http_code} --silent --output /dev/null http://3.72.251.197/articles)
+    response=$(curl --write-out %{http_code} --silent --output /dev/null https://dev.epam.pp.ua/articles)
 }
 
 n=0
