@@ -13,6 +13,6 @@ do
         echo Status: 200 OK
         break
     fi
-    sleep 1
+    sleep 10
     n=$(( n + 1 ))
 done
