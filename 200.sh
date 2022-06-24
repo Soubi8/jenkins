@@ -4,6 +4,7 @@ command () {
     response=$(curl --write-out %{http_code} --silent --output /dev/null https://dev.epam.pp.ua/articles)
 }
 
+sleep 10
 n=0
 while [[ "$n" -lt 10 ]]
 do
