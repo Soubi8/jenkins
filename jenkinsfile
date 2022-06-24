@@ -36,7 +36,7 @@ pipeline {
                 script {
                     def dockerRun = "docker run --rm -d -p 8080:8080 ${REGISTRY_NAME}:${TAG}"
                     sshagent(['aws_fp_api']) {
-                        sh "ssh -o StrictHostKeyChecking=no ubuntu@3.72.251.197 ${dockerRun}"
+                        sh "ssh -o StrictHostKeyChecking=no ubuntu@3.72.255.231 ${dockerRun}"
                     }
                 }
             }
@@ -45,7 +45,7 @@ pipeline {
             steps {
                 sh '''
                     bash ~/agent/workspace/docker-app/200.sh
-                    export APIURL=http://3.72.251.197 && bash ~/agent/workspace/docker-app/doc/run-api-tests.sh
+                    export APIURL=https://dev.epam.pp.ua && bash ~/agent/workspace/docker-app/doc/run-api-tests.sh
                 '''
             }
         }
