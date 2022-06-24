@@ -8,7 +8,7 @@ n=0
 while [[ "$n" -lt 10 ]]
 do
     command
-    if [[ "$response" -eq 201 ]]
+    if [[ "$response" -eq 200 ]]
     then
         echo Status: 200 OK
         break
