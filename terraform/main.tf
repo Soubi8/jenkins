@@ -16,10 +16,10 @@ resource "aws_instance" "web" {
     Project = var.tag_project_name
   }
 
-  #provisioner "local-exec" {
-  #command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ubuntu -i '${self.public_ip},' --private-key ~/.ssh/fp_key.pem ./playbook_aws/nginx.yml"
-  #interpreter = ["bash", "-c"]
-  #}
+  provisioner "local-exec" {
+    command     = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ubuntu -i '${self.public_ip},' --private-key ~/.ssh/fp_key.pem ./playbook_aws/nginx.yml"
+    interpreter = ["bash", "-c"]
+  }
 
 }
 
@@ -81,7 +81,7 @@ module "dev_cloudflare" {
 
 module "cloudflare" {
   source  = "./modules/cloudflare"
-  name    = "prod"
+  name    = "@"
   ip      = aws_instance.web.1.public_ip
   cf_auth = local.cf_auth
 }

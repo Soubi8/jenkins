@@ -1,19 +1,18 @@
 #!/bin/bash
 
 command () {
-    response=$(curl --write-out %{http_code} --silent --output /dev/null http://3.72.251.197/articles)
+    response=$(curl --write-out %{http_code} --silent --output /dev/null https://dev.epam.pp.ua/articles)
 }
 
 n=0
 while [[ "$n" -lt 10 ]]
 do
     command
-    if [[ "$response" -eq 200 ]]
+    if [[ "$response" -eq 201 ]]
     then
         echo Status: 200 OK
         break
     fi
-    command
-    sleep 5
+    sleep 1
     n=$(( n + 1 ))
 done
