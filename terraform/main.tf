@@ -60,7 +60,7 @@ resource "aws_security_group" "web_sg" {
 
   tags = {
     Name        = "web_sg"
-    Description = "HTTP/SSH-ALL"
+    Description = "HTTP(S)/SSH-ALL"
   }
 }
 

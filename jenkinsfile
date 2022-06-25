@@ -5,6 +5,8 @@ pipeline {
     environment {
         REGISTRY_NAME = 'soubi8/fp'
         DOCKER_PWD = credentials('docker-pwd')
+        IP_DEV = ''
+        IP_PROD = ''
     }
     stages {
         stage('SCM Checkout') {
@@ -36,17 +38,15 @@ pipeline {
                 script {
                     def dockerRun = "docker run --rm -d -p 8080:8080 ${REGISTRY_NAME}:${TAG}"
                     sshagent(['aws_fp_api']) {
-                        sh "ssh -o StrictHostKeyChecking=no ubuntu@3.72.255.231 ${dockerRun}"
+                        sh "ssh -o StrictHostKeyChecking=no ubuntu@${IP_DEV} ${dockerRun}"
                     }
                 }
             }
         }
         stage('Test the API on Dev Server') {
             steps {
-                sh '''
-                    bash ~/agent/workspace/docker-app/200.sh
-                    export APIURL=https://dev.epam.pp.ua && bash ~/agent/workspace/docker-app/doc/run-api-tests.sh
-                '''
+                sh "bash ~/agent/workspace/${JOB_NAME}/200.sh"
+                sh "export APIURL=https://dev.epam.pp.ua && bash ~/agent/workspace/${JOB_NAME}/doc/run-api-tests.sh"
             }
         }
     }
