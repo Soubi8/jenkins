@@ -3,10 +3,7 @@ pipeline {
         label 'agent1'
     }
     environment {
-        REGISTRY_NAME = 'soubi8/fp'
         DOCKER_PWD = credentials('docker-pwd')
-        IP_DEV = ''
-        IP_PROD = ''
     }
     stages {
         stage('SCM Checkout') {
