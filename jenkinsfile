@@ -4,6 +4,8 @@ pipeline {
     }
     environment {
         DOCKER_PWD = credentials('docker-pwd')
+        IP_DEV = '3.126.59.30'
+        IP_PROD = '3.73.49.83'
     }
     stages {
         stage('SCM Checkout') {
@@ -16,11 +18,11 @@ pipeline {
         }
         stage('Build App to Docker Image') {
             steps {
-                sh '''
+                sh """
                     sudo usermod -aG docker $USER
                     sudo chown $USER /var/run/docker.sock
-                '''
-                sh "docker build --pull -t ${REGISTRY_NAME}:${TAG} ."
+                    docker build --pull -t ${REGISTRY_NAME}:${TAG} .
+                """
             }
         }
         stage('Push Docker Image') {
@@ -42,8 +44,10 @@ pipeline {
         }
         stage('Test the API on Dev Server') {
             steps {
-                sh "bash ~/agent/workspace/${JOB_NAME}/200.sh"
-                sh "export APIURL=https://dev.epam.pp.ua && bash ~/agent/workspace/${JOB_NAME}/doc/run-api-tests.sh"
+                sh """
+                    bash ~/agent/workspace/${JOB_NAME}/200.sh
+                    export APIURL=https://dev.epam.pp.ua && bash ~/agent/workspace/${JOB_NAME}/doc/run-api-tests.sh
+                """
             }
         }
     }
