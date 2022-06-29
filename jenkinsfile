@@ -4,8 +4,11 @@ pipeline {
     }
     environment {
         DOCKER_PWD = credentials('docker-pwd')
-        IP_DEV = '3.126.59.30'
-        IP_PROD = '3.73.49.83'
+        IP_DEV = '3.122.192.76'
+        IP_PROD = '52.29.93.252'
+        DEV = 'https://dev.epam.pp.ua'
+        PROD = 'https://epam.pp.ua'
+        APP = 'api'
     }
     stages {
         stage('SCM Checkout') {
@@ -35,9 +38,10 @@ pipeline {
         stage('Deploy to Dev Server') {
             steps {
                 script {
-                    def dockerRun = "docker run --rm -d -p 8080:8080 ${REGISTRY_NAME}:${TAG}"
+                    def dockerRun = "docker run --rm --name ${APP} -d -p 8080:8080 ${REGISTRY_NAME}:${TAG}"
+                    def dockerStop = "docker stop ${APP}"
                     sshagent(['aws_fp_api']) {
-                        sh "ssh -o StrictHostKeyChecking=no ubuntu@${IP_DEV} ${dockerRun}"
+                        sh "ssh -o StrictHostKeyChecking=no ubuntu@${IP_DEV} '${dockerRun} || (${dockerStop} && ${dockerRun})'"
                     }
                 }
             }
@@ -46,7 +50,7 @@ pipeline {
             steps {
                 sh """
                     bash ~/agent/workspace/${JOB_NAME}/200.sh
-                    export APIURL=https://dev.epam.pp.ua && bash ~/agent/workspace/${JOB_NAME}/doc/run-api-tests.sh
+                    export APIURL=${DEV} && bash ~/agent/workspace/${JOB_NAME}/doc/run-api-tests.sh
                 """
             }
         }
