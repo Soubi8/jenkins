@@ -5,7 +5,10 @@ pipeline {
     environment {
         DOCKER_PWD = credentials('docker-pwd')
         DEV = 'https://dev.epam.pp.ua'
+        PROD = 'https://epam.pp.ua'
         IP_DEV = '3.122.192.76'
+        IP_PROD = '52.29.93.252'
+        REGISTRY_NAME = 'soubi8/fp'
         APP = 'api'
     }
     stages {
@@ -31,6 +34,9 @@ pipeline {
             }
         }
         stage('Deploy to Dev Server') {
+            when {
+                branch 'develop'
+            }
             steps {
                 script {
                     def dockerRun = "docker run --rm --name ${APP} -d -p 8080:8080 ${REGISTRY_NAME}:${BRANCH_NAME}"
@@ -41,13 +47,50 @@ pipeline {
                 }
             }
         }
+        stage('Deploy to Prod Server') {
+            when {
+                branch 'master'
+            }
+            steps {
+                script {
+                    def dockerRun = "docker run --rm --name ${APP} -d -p 8080:8080 ${REGISTRY_NAME}:${BRANCH_NAME}"
+                    def dockerStop = "docker stop ${APP}"
+                    sshagent(['aws_fp_api']) {
+                        sh "ssh -o StrictHostKeyChecking=no ubuntu@${IP_PROD} '${dockerRun} || (${dockerStop} && ${dockerRun})'"
+                    }
+                }
+            }
+        }
         stage('Test the API on Dev Server') {
+            when {
+                branch 'develop'
+            }
             steps {
                 sh """
-                    bash ./200.sh
+                    bash ./200.sh ${DEV}
                     export APIURL=${DEV} && bash ./doc/run-api-tests.sh
                 """
             }
         }
+        stage('Test the API on Prod Server') {
+            when {
+                branch 'master'
+            }
+            steps {
+                sh """
+                    bash ./200.sh ${PROD}
+                    export APIURL=${PROD} && bash ./doc/run-api-tests.sh
+                """
+            }
+        }
+        //stage('Merge Request to Master'){
+            //when {
+                //branch 'develop'
+            //}
+            //steps {
+                //git checkout master
+                //git merge develop
+            //}
+        //}
     }
 }

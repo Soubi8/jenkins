@@ -1,7 +1,7 @@
 #!/bin/bash
 
 command () {
-    response=$(curl --write-out %{http_code} --silent --output /dev/null https://dev.epam.pp.ua/articles)
+    response=$(curl --write-out %{http_code} --silent --output /dev/null $1)
 }
 
 sleep 10

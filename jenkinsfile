@@ -50,7 +50,7 @@ pipeline {
             steps {
                 sh """
                     bash ~/agent/workspace/${JOB_NAME}/200.sh
-                    export APIURL=${DEV} && bash ~/agent/workspace/${JOB_NAME}/doc/run-api-tests.sh
+                    export APIURL=https://dev.epam.pp.ua && bash ~/agent/workspace/${JOB_NAME}/doc/run-api-tests.sh
                 """
             }
         }
