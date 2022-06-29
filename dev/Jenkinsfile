@@ -1,0 +1,53 @@
+pipeline {
+    agent {
+        label 'agent1'
+    }
+    environment {
+        DOCKER_PWD = credentials('docker-pwd')
+        DEV = 'https://dev.epam.pp.ua'
+        IP_DEV = '3.122.192.76'
+        APP = 'api'
+    }
+    stages {
+        stage('SCM Checkout') {
+            steps {
+                git credentialsId: 'jenkins_key', url: 'git@github.com:Soubi8/realworld-springboot-java.git'
+            }
+        }
+        stage('Build App to Docker Image') {
+            steps {
+                sh """
+                    sudo usermod -aG docker $USER
+                    sudo chown $USER /var/run/docker.sock
+                    docker build --pull -t ${REGISTRY_NAME}:${BRANCH_NAME} .
+                """
+            }
+        }
+        stage('Push Docker Image') {
+            steps {  // Add credential helper
+                sh 'echo "$DOCKER_PWD" | docker login -u soubi8 --password-stdin'
+                sh "docker push ${REGISTRY_NAME}:${BRANCH_NAME}"
+                sh 'docker logout' 
+            }
+        }
+        stage('Deploy to Dev Server') {
+            steps {
+                script {
+                    def dockerRun = "docker run --rm --name ${APP} -d -p 8080:8080 ${REGISTRY_NAME}:${BRANCH_NAME}"
+                    def dockerStop = "docker stop ${APP}"
+                    sshagent(['aws_fp_api']) {
+                        sh "ssh -o StrictHostKeyChecking=no ubuntu@${IP_DEV} '${dockerRun} || (${dockerStop} && ${dockerRun})'"
+                    }
+                }
+            }
+        }
+        stage('Test the API on Dev Server') {
+            steps {
+                sh """
+                    bash ./200.sh
+                    export APIURL=${DEV} && bash ./doc/run-api-tests.sh
+                """
+            }
+        }
+    }
+}
