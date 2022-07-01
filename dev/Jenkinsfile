@@ -12,8 +12,15 @@ pipeline {
         APP = 'api'
     }
     stages {
+        stage('Clean Workspace'){
+            steps {
+                echo "============== Cleaning Workspace =============="
+                sh 'rm -rf ./*'
+            }
+        }
         stage('SCM Checkout') {
             steps {
+                echo "============== SCM Checkout =============="
                 git credentialsId: 'jenkins_key', url: 'git@github.com:Soubi8/realworld-springboot-java.git'
             }
         }
@@ -22,7 +29,6 @@ pipeline {
                 echo "============== Building App to Docker Image =============="
                 sh """
                     git checkout ${BRANCH_NAME}
-                    ls -la
                     sudo usermod -aG docker $USER
                     sudo chown $USER /var/run/docker.sock
                     docker build --pull -t ${REGISTRY_NAME}:${BRANCH_NAME} .
@@ -42,6 +48,7 @@ pipeline {
                 branch 'develop'
             }
             steps {
+                echo "============== Deploying the API to Dev Server =============="
                 script {
                     def dockerRun = "docker run --rm --name ${APP} -d -p 8080:8080 ${REGISTRY_NAME}:${BRANCH_NAME}"
                     def dockerStop = "docker stop ${APP}"
@@ -56,6 +63,7 @@ pipeline {
                 branch 'master'
             }
             steps {
+                echo "============== Deploying the API to Prod Server =============="
                 script {
                     def dockerRun = "docker run --rm --name ${APP} -d -p 8080:8080 ${REGISTRY_NAME}:${BRANCH_NAME}"
                     def dockerStop = "docker stop ${APP}"
@@ -70,6 +78,7 @@ pipeline {
                 branch 'develop'
             }
             steps {
+                echo "============== Testing the API on Dev Server =============="
                 sh """
                     bash ./200.sh ${DEV}/articles
                     export APIURL=${DEV} && bash ./doc/run-api-tests.sh
@@ -81,6 +90,7 @@ pipeline {
                 branch 'master'
             }
             steps {
+                echo "============== Testing the API on Prod Server =============="
                 sh """
                     bash ./200.sh ${PROD}/articles
                     export APIURL=${PROD} && bash ./doc/run-api-tests.sh
@@ -92,6 +102,7 @@ pipeline {
                 branch 'develop'
             }
             steps {
+                echo "============== Git Merge to Master Branch =============="
                 withCredentials([string(credentialsId: 'git_token', variable: 'GIT_TOKEN')]) {
                     script{
                         sh '''
