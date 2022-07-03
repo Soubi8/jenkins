@@ -68,6 +68,6 @@
         state: latest
         update_cache: true
     - name: Adding user to Docker group
-      #become_user: ubuntu
+      become_user: ubuntu
       become: yes
-      shell: usermod -aG docker $USER
+      shell: sudo usermod -aG docker $USER
