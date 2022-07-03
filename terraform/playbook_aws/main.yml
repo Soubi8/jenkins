@@ -1,6 +1,10 @@
 - hosts: "*"
   gather_facts: no
   tasks:
+    - name: Waiting for connection to remote host
+      ansible.builtin.wait_for_connection:
+        delay: 10
+        timeout: 300
     - name: Apt update
       become: yes
       shell: apt update
