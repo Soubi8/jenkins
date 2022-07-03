@@ -1,8 +1,8 @@
-FROM node:18-alpine
+FROM node:alpine
 RUN mkdir /app
 WORKDIR /app
-RUN npm run build
-COPY ./public /app
+COPY package.json ./
+COPY package-lock.json ./
+COPY ./ ./
 EXPOSE 5000
-RUN npm i
-CMD ["npm", "run", "start"]
+ENTRYPOINT ["npm", "run", "start"]
