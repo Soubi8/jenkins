@@ -35,7 +35,7 @@ pipeline {
             }
         }
         stage('Push Docker Image') {
-            steps {  // Add credential helper for Docker
+            steps {  // Add credential helper
                 echo "============== Pushing Docker Image to DockerHub =============="
                 sh 'echo "$DOCKER_PWD" | docker login -u soubi8 --password-stdin'
                 sh "docker push ${REGISTRY_NAME}:front_${BRANCH_NAME}"
@@ -49,7 +49,7 @@ pipeline {
             steps {
                 echo "============== Deploying the App to Dev Server =============="
                 script {
-                    def dockerRun = "docker run --rm --name ${APP} -d -p 8081:80 ${REGISTRY_NAME}:front_${BRANCH_NAME}"
+                    def dockerRun = "docker run --pull always --rm --name ${APP} -d -p 8081:80 ${REGISTRY_NAME}:front_${BRANCH_NAME}"
                     def dockerStop = "docker stop ${APP}"
                     sshagent(['aws_fp_api']) {
                         sh "ssh -o StrictHostKeyChecking=no ubuntu@${IP_DEV} '${dockerRun} || (${dockerStop} && ${dockerRun})'"
@@ -64,7 +64,7 @@ pipeline {
             steps {
                 echo "============== Deploying the App to Prod Server =============="
                 script {
-                    def dockerRun = "docker run --rm --name ${APP} -d -p 8081:80 ${REGISTRY_NAME}:front_${BRANCH_NAME}"
+                    def dockerRun = "docker run --pull always --rm --name ${APP} -d -p 8081:80 ${REGISTRY_NAME}:front_${BRANCH_NAME}"
                     def dockerStop = "docker stop ${APP}"
                     sshagent(['aws_fp_api']) {
                         sh "ssh -o StrictHostKeyChecking=no ubuntu@${IP_PROD} '${dockerRun} || (${dockerStop} && ${dockerRun})'"
