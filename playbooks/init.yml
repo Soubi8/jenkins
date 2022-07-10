@@ -121,7 +121,7 @@
         state: present
         force: no
         mode: 0400
-    
+
     - name: Generating SSH key "{{ssh_key_filename2}}"
       become: yes
       become_user: "{{username}}"
