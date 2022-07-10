@@ -5,13 +5,11 @@ The project's goal is to build a successful CI/CD pipeline using the available t
 
 ## GitHub Repository's used for pipeline
 
-The following repositories were forked and used in this project:
+The following repositories were forked and used in this project
 
 ### [Solid-Realworld](https://github.com/solidjs/solid-realworld)&nbsp;&nbsp;&nbsp;&nbsp;[Realworld-Springboot-Java](https://github.com/raeperd/realworld-springboot-java)
 
 # Getting started
-
-## Environment provisioning
 
 ### Containerized Jenkins Master and Agent
 
@@ -50,3 +48,12 @@ If there is no domain name available, the _Cloudflare_ module should be commente
 Jenkins gets events from Github's webhook and starts to build the multibranch pipelines if the Jenkinsfile is present within the application's repository. For this, files from [api](api/) folder should be added to the _develop_ branch of forked repository [Solid-Realworld](https://github.com/solidjs/solid-realworld). In turn, the content of [front](front/) folder should be added to the _feature_ branch of forked repository [Realworld-Springboot-Java](https://github.com/raeperd/realworld-springboot-java). 
 
 Note: _Jenkins multibranch pipeline scans all branches from repository, however it processes only those, that have a Jenkinsfile present_
+
+### Environment variables
+
+Currently there are two environmental variables set within the Jenkins's GUI, which are used in the pipelines.
+
+ - IP_DEV
+ - IP_PROD
+
+Values for those should be changed, based on the IP addresses provided by terraform output during the provisioning of the Dev and Prod environments.
