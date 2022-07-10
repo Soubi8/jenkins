@@ -2,12 +2,15 @@ pipeline {
     agent {
         label 'agent1'
     }
+    options { 
+        skipDefaultCheckout() 
+    }
     environment {
         DOCKER_PWD = credentials('docker-pwd')
-        DEV = 'https://dev.epam.pp.ua'
-        PROD = 'https://epam.pp.ua'
-        IP_DEV = '3.122.192.76'
-        IP_PROD = '52.29.93.252'
+        DEV = 'https://dev.epam.pp.ua/api'
+        PROD = 'https://epam.pp.ua/api'
+        IP_DEV = ''     // Add after provisioning
+        IP_PROD = ''    // Add after provisioning
         REGISTRY_NAME = 'soubi8/fp'
         APP = 'api'
     }
@@ -21,14 +24,13 @@ pipeline {
         stage('SCM Checkout') {
             steps {
                 echo "============== SCM Checkout =============="
-                git credentialsId: 'jenkins_key', url: 'git@github.com:Soubi8/realworld-springboot-java.git'
+                git branch: '${BRANCH_NAME}', credentialsId: 'jenkins_key', url: 'git@github.com:Soubi8/realworld-springboot-java.git'
             }
         }
-        stage('Build App to Docker Image') {
+        stage('Build API to Docker Image') {
             steps {
                 echo "============== Building App to Docker Image =============="
                 sh """
-                    git checkout ${BRANCH_NAME}
                     sudo usermod -aG docker $USER
                     sudo chown $USER /var/run/docker.sock
                     docker build --pull -t ${REGISTRY_NAME}:${BRANCH_NAME} .
@@ -36,7 +38,7 @@ pipeline {
             }
         }
         stage('Push Docker Image') {
-            steps {  // Add credential helper
+            steps {
                 echo "============== Pushing Docker Image to DockerHub =============="
                 sh 'echo "$DOCKER_PWD" | docker login -u soubi8 --password-stdin'
                 sh "docker push ${REGISTRY_NAME}:${BRANCH_NAME}"
@@ -50,7 +52,7 @@ pipeline {
             steps {
                 echo "============== Deploying the API to Dev Server =============="
                 script {
-                    def dockerRun = "docker run --rm --name ${APP} -d -p 8080:8080 ${REGISTRY_NAME}:${BRANCH_NAME}"
+                    def dockerRun = "docker run --pull always --rm --name ${APP} -d -p 8080:8080 ${REGISTRY_NAME}:${BRANCH_NAME}"
                     def dockerStop = "docker stop ${APP}"
                     sshagent(['aws_fp_api']) {
                         sh "ssh -o StrictHostKeyChecking=no ubuntu@${IP_DEV} '${dockerRun} || (${dockerStop} && ${dockerRun})'"
@@ -65,7 +67,7 @@ pipeline {
             steps {
                 echo "============== Deploying the API to Prod Server =============="
                 script {
-                    def dockerRun = "docker run --rm --name ${APP} -d -p 8080:8080 ${REGISTRY_NAME}:${BRANCH_NAME}"
+                    def dockerRun = "docker run --pull always --rm --name ${APP} -d -p 8080:8080 ${REGISTRY_NAME}:${BRANCH_NAME}"
                     def dockerStop = "docker stop ${APP}"
                     sshagent(['aws_fp_api']) {
                         sh "ssh -o StrictHostKeyChecking=no ubuntu@${IP_PROD} '${dockerRun} || (${dockerStop} && ${dockerRun})'"
@@ -111,7 +113,7 @@ pipeline {
                                 -H \"Accept: application/vnd.github.v3+json\" \\
                                 -H \"Authorization: token ${GIT_TOKEN}\" \\
                                 https://api.github.com/repos/soubi8/realworld-springboot-java/merges \\
-                                -d '{\"base\":\"master\",\"head\":\"develop\",\"commit_message\":\"Added new feature for API\"}'
+                                -d '{\"base\":\"master\",\"head\":\"develop\",\"commit_message\":\"Changed the API's version\"}'
                         '''
                     }
                 }

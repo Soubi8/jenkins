@@ -9,19 +9,23 @@ The following repositories were forked and used in this project:
 
 ### [Solid-Realworld](https://github.com/solidjs/solid-realworld)&nbsp;&nbsp;&nbsp;&nbsp;[Realworld-Springboot-Java](https://github.com/raeperd/realworld-springboot-java)
 
-## Getting started
+# Getting started
 
 ## Environment provisioning
 
-Terraform is expecting the credentials from a _profile_ variable, which is currently set to _terraform_ in [terraform/variables.tf](terraform/variables.tf). It is required for the terraform to connect to the AWS. More on the credentials for AWS [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html#cli-configure-quickstart-config).
+### Containerized Jenkins Master and Agent
+
+### Provisioning the Dev and Prod environments
+
+Terraform is expecting the credentials from a _profile_ variable, which is currently set to _terraform_ in [variables.tf](terraform/variables.tf). It is required for the terraform to connect to the AWS. More on the credentials for AWS [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html#cli-configure-quickstart-config).
 
     terraform init      # To load the modules
     terraform plan      # To view the planned provisioning (optional)
     terraform apply     # To provision the infrastructure
 
-Terraform provisions two AWS EC2 instances, applies a security group to allow inbound SSH, HTTP and HTTPS access, as well as outbound communication. Variables can be viewed and edited in [terraform/variables.tf](terraform/variables.tf) file. 
+Terraform provisions two AWS EC2 instances, applies a security group to allow inbound SSH, HTTP and HTTPS access, as well as outbound communication. Provisioner runs Ansible to setup the EC2 instances according to the [playbook](terraform/playbook_aws/main.yml). It installs and configures nginx, docker and other dependencies to run the applications.
 
-In addition it creates two DNS A records for domain _epam.pp.ua_ in Cloudflare, more on this in the next section (_optional_).
+In addition, terraform creates two DNS A records for domain _epam.pp.ua_ in Cloudflare, more on this in the next section.
 
 ### Cloudflare module (optional):
 
