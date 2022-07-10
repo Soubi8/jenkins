@@ -1,7 +1,7 @@
 # Final Project - CI/CD Pipeline
 ## Objectives
 
-The project's goal is to build a successful CI/CD pipeline using the available tools and knowledge of the author. Please refer to the [presentation file](CI_CD_Pipeline_Final_Project.pptx) for the overwiew.
+The project's goal is to build a successful CI/CD pipeline using the available tools and knowledge of the author. Please refer to the [presentation file](CI_CD_Pipeline_Final_Project.pptx) for an overview.
 
 ## GitHub repositories used for the project
 
