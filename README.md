@@ -5,7 +5,7 @@ The project's goal is to build a successful CI/CD pipeline using the available t
 
 ## GitHub repositories used for the project
 
-The following repositories were forked and used in this project
+The following repositories were forked and used in this project.
 
 ### [Solid-Realworld](https://github.com/solidjs/solid-realworld)&nbsp;&nbsp;&nbsp;&nbsp;[Realworld-Springboot-Java](https://github.com/raeperd/realworld-springboot-java)
 
@@ -33,7 +33,7 @@ In addition, terraform creates two DNS A records for domain in Cloudflare, more 
 
 ### Cloudflare module (optional)
 
-Create a file __secret.auto.tfvars__ and add the following variables there:
+Create a file __secret.auto.tfvars__ and add the following variables there
 
     cloudflare_email   = "value"
     cloudflare_api_key = "value"

@@ -31,7 +31,7 @@ pipeline {
                 sh """
                     sudo usermod -aG docker $USER
                     sudo chown $USER /var/run/docker.sock
-                    docker build --pull -t ${REGISTRY_NAME}:${BRANCH_NAME} .
+                    docker build --pull -t ${REGISTRY_NAME}:api_${BRANCH_NAME} .
                 """
             }
         }
@@ -39,7 +39,7 @@ pipeline {
             steps {
                 echo "============== Pushing Docker Image to DockerHub =============="
                 sh 'echo "$DOCKER_PWD" | docker login -u soubi8 --password-stdin'
-                sh "docker push ${REGISTRY_NAME}:${BRANCH_NAME}"
+                sh "docker push ${REGISTRY_NAME}:api_${BRANCH_NAME}"
                 sh 'docker logout' 
             }
         }
@@ -50,7 +50,7 @@ pipeline {
             steps {
                 echo "============== Deploying the API to Dev Server =============="
                 script {
-                    def dockerRun = "docker run --pull always --rm --name ${APP} -d -p 8080:8080 ${REGISTRY_NAME}:${BRANCH_NAME}"
+                    def dockerRun = "docker run --pull always --rm --name ${APP} -d -p 8080:8080 ${REGISTRY_NAME}:api_${BRANCH_NAME}"
                     def dockerStop = "docker stop ${APP}"
                     sshagent(['aws_fp_api']) {
                         sh "ssh -o StrictHostKeyChecking=no ubuntu@${IP_DEV} '${dockerRun} || (${dockerStop} && ${dockerRun})'"
@@ -65,7 +65,7 @@ pipeline {
             steps {
                 echo "============== Deploying the API to Prod Server =============="
                 script {
-                    def dockerRun = "docker run --pull always --rm --name ${APP} -d -p 8080:8080 ${REGISTRY_NAME}:${BRANCH_NAME}"
+                    def dockerRun = "docker run --pull always --rm --name ${APP} -d -p 8080:8080 ${REGISTRY_NAME}:api_${BRANCH_NAME}"
                     def dockerStop = "docker stop ${APP}"
                     sshagent(['aws_fp_api']) {
                         sh "ssh -o StrictHostKeyChecking=no ubuntu@${IP_PROD} '${dockerRun} || (${dockerStop} && ${dockerRun})'"
@@ -111,7 +111,7 @@ pipeline {
                                 -H \"Accept: application/vnd.github.v3+json\" \\
                                 -H \"Authorization: token ${GIT_TOKEN}\" \\
                                 https://api.github.com/repos/soubi8/realworld-springboot-java/merges \\
-                                -d '{\"base\":\"master\",\"head\":\"develop\",\"commit_message\":\"Changed the API's version\"}'
+                                -d '{\"base\":\"master\",\"head\":\"develop\",\"commit_message\":\"Changed the version of app\"}'
                         '''
                     }
                 }
