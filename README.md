@@ -1,15 +1,15 @@
 # CI/CD Pipeline
-## About
+## Objectives
 
 The project's goal is to build a successful CI/CD pipeline using the available tools and knowledge of the author
 
-## GitHub Repository's used for pipeline
+## GitHub repositories used for the project
 
 The following repositories were forked and used in this project
 
 ### [Solid-Realworld](https://github.com/solidjs/solid-realworld)&nbsp;&nbsp;&nbsp;&nbsp;[Realworld-Springboot-Java](https://github.com/raeperd/realworld-springboot-java)
 
-# Getting started
+## Getting started
 
 ### Containerized Jenkins Master and Agent
 
