@@ -2,12 +2,15 @@ pipeline {
     agent {
         label 'agent1'
     }
+    options { 
+        skipDefaultCheckout() 
+    } 
     environment {
         DOCKER_PWD = credentials('docker-pwd')
         DEV = 'https://dev.epam.pp.ua'
         PROD = 'https://epam.pp.ua'
-        IP_DEV = '3.122.251.228'
-        IP_PROD = '18.185.124.88'
+        IP_DEV = ''     // Add after provisioning
+        IP_PROD = ''    // Add after provisioning
         REGISTRY_NAME = 'soubi8/fp'
         APP = 'front'
     }
@@ -35,7 +38,7 @@ pipeline {
             }
         }
         stage('Push Docker Image') {
-            steps {  // Add credential helper
+            steps {
                 echo "============== Pushing Docker Image to DockerHub =============="
                 sh 'echo "$DOCKER_PWD" | docker login -u soubi8 --password-stdin'
                 sh "docker push ${REGISTRY_NAME}:front_${BRANCH_NAME}"
@@ -44,7 +47,7 @@ pipeline {
         }
         stage('Deploy to Dev Server') {
             when {
-                branch 'develop'
+                branch 'feature'
             }
             steps {
                 echo "============== Deploying the App to Dev Server =============="
@@ -74,7 +77,7 @@ pipeline {
         }
         stage('Merge Request to Main branch') {
             when {
-                branch 'develop'
+                branch 'feature'
             }
             steps {
                 echo "============== Git Merge to Main Branch =============="
@@ -86,7 +89,7 @@ pipeline {
                                 -H \"Accept: application/vnd.github.v3+json\" \\
                                 -H \"Authorization: token ${GIT_TOKEN}\" \\
                                 https://api.github.com/repos/soubi8/solid-realworld/merges \\
-                                -d '{\"base\":\"main\",\"head\":\"develop\",\"commit_message\":\"Added new feature for APP\"}'
+                                -d '{\"base\":\"main\",\"head\":\"feature\",\"commit_message\":\"Minor edit. Edit appName value\"}'
                         '''
                     }
                 }
