@@ -33,7 +33,7 @@ In addition, terraform creates two DNS A records for domain in Cloudflare, more 
 
 ### Cloudflare module (optional)
 
-Create a file __secret.auto.tfvars__ and add the following variables there
+Create a file __secret.auto.tfvars__ and add the following variables there:
 
     cloudflare_email   = "value"
     cloudflare_api_key = "value"
@@ -48,6 +48,8 @@ If there is no domain name available, the _Cloudflare_ module should be commente
 Jenkins gets events from Github's webhook and starts to build the multibranch pipelines if the Jenkinsfile is present within the application's repository. For this, files from [api](api/) folder should be added to the _develop_ branch of forked repository [Solid-Realworld](https://github.com/solidjs/solid-realworld). In turn, the content of [front](front/) folder should be added to the _feature_ branch of forked repository [Realworld-Springboot-Java](https://github.com/raeperd/realworld-springboot-java). 
 
 Note: _Jenkins multibranch pipeline scans all branches from repository, however it processes only those, that have a Jenkinsfile present_
+
+The pipeline for API has a test stage, where the API is checked by provided postman collection. The other pipeline lacks the this stage, as there is no unit test provided for the application.
 
 ### Environment variables
 
