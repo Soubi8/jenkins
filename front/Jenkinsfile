@@ -9,8 +9,6 @@ pipeline {
         DOCKER_PWD = credentials('docker-pwd')
         DEV = 'https://dev.epam.pp.ua'
         PROD = 'https://epam.pp.ua'
-        IP_DEV = ''     // Add after provisioning
-        IP_PROD = ''    // Add after provisioning
         REGISTRY_NAME = 'soubi8/fp'
         APP = 'front'
     }
