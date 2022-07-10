@@ -16,7 +16,8 @@
   vars:
     
     workdir: ~/jenkins_compose
-    ssh_key_filename: jenkins_agent
+    ssh_key_filename1: jenkins_agent
+    ssh_key_filename2: jenkins
   
   tasks:
     
@@ -100,15 +101,37 @@
         group: "{{username}}"
         mode: 0644
 
-    - name: Generating SSH key "{{ssh_key_filename}}"
+    - name: Copying Dockerfile.agent
+      become: yes
+      become_user: "{{username}}"
+      copy:
+        src: ./files/Dockerfile.agent
+        dest: "{{workdir}}/Dockerfile.agent"
+        owner: "{{username}}"
+        group: "{{username}}"
+        mode: 0644
+
+    - name: Generating SSH key "{{ssh_key_filename1}}"
       become: yes
       become_user: "{{username}}"
       openssh_keypair:
-        path: "{{workdir}}/{{ssh_key_filename}}"
+        path: "{{workdir}}/{{ssh_key_filename1}}"
         type: rsa
         size: 4096
         state: present
         force: no
+        mode: 0400
+
+    - name: Generating SSH key "{{ssh_key_filename2}}"
+      become: yes
+      become_user: "{{username}}"
+      openssh_keypair:
+        path: "{{workdir}}/{{ssh_key_filename2}}"
+        type: rsa
+        size: 4096
+        state: present
+        force: no
+        mode: 0400
 
     - name: Passing key to docker_compose.yml
       become: yes
@@ -136,8 +159,3 @@
       register: result
     - debug:
         var: result.stdout
-
-# Add:
-# chmod 400 jenkins_agent private key
-# Generate key for jenkins (for Github)
-# chmod 400 jenkins private key
