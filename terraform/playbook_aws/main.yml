@@ -19,8 +19,8 @@
     - name: Copying the config file and restarting nginx
       become: yes
       copy:
-        src: /home/jenkins/project/jenkins-cicd/terraform/app.conf  # Linux Host
-        #src: /mnt/c/users/soubi/project/terraform/app.conf  # Windows Host
+        src: /home/jenkins/jenkins-cicd/terraform/app.conf    # Linux Host
+        #src: /mnt/c/users/soubi/project/terraform/app.conf   # Windows Host
         dest: /etc/nginx/sites-available/app.conf
     - name: Unlinking default config file
       become: yes
