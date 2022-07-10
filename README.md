@@ -1,7 +1,7 @@
-# CI/CD Pipeline
+# Final Project - CI/CD Pipeline
 ## Objectives
 
-The project's goal is to build a successful CI/CD pipeline using the available tools and knowledge of the author
+The project's goal is to build a successful CI/CD pipeline using the available tools and knowledge of the author. Please refer to the [presentation file](CI_CD_Pipeline_Final_Project.pptx) for the overwiew.
 
 ## GitHub repositories used for the project
 
@@ -17,7 +17,7 @@ Ansible's [playbook](playbooks/init.yml) installs and configures all the necessa
 
     docker compose up -d    # Starts the Jenkins Master, Agent and network
 
-Jenkins is setup with the default offered plugins. Credentials are stored in the built-in Credentials store. 
+Jenkins is configured with the default offered plugins. Credentials are stored in the built-in Credentials store. 
 
 ### Provisioning the Dev and Prod environments
 
